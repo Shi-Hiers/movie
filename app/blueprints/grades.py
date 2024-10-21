@@ -11,20 +11,26 @@ def grade():
 
     # Handle POST request to add a new grade
     if request.method == 'POST':
-        number_grade = request.form['number_grade']
         student_name = request.form['student_name']
+        number_grade = request.form['number_grade']
+
+        # Check if the number_grade field is provided and valid
+        if not number_grade.isdigit():
+            flash('Invalid or missing grade input', 'error')
+            return redirect(url_for('grades.grade'))
 
         try:
             number_grade = int(number_grade)
-            # Call the calculate_grade function from the functions.py file
+            # Call the calculate_grade function to get the letter grade
             letter_grade = calculate_grade(number_grade)
 
             # Insert the new grade info into the database
             cursor.execute('INSERT INTO grades (letter_grade, student_name) VALUES (%s, %s)',
                            (letter_grade, student_name))
             db.commit()
+
         except ValueError:
-            flash('Invalid grade input', 'error')
+            flash('Invalid input for grade', 'error')
 
         return redirect(url_for('grades.grade'))
 
@@ -39,20 +45,28 @@ def update_grade(grade_id):
     cursor = db.cursor()
 
     if request.method == 'POST':
-        # Update the grade's details
-        number_grade = request.form['number_grade']
         student_name = request.form['student_name']
+        number_grade = request.form['number_grade']
+
+        # Check if the number_grade field is provided and valid
+        if not number_grade.isdigit():
+            flash('Invalid or missing grade input', 'error')
+            return redirect(url_for('grades.update_grade', grade_id=grade_id))
 
         try:
-            number_grade = int(number_grade)
-            # Call the calculate_grade function from the functions.py file
+            number_grade = int(number_grade)  # Convert to integer
+            # Call the calculate_grade function to get the letter grade
             letter_grade = calculate_grade(number_grade)
 
-            cursor.execute('UPDATE grades SET letter_grade = %s, student_name = %s WHERE grade_id = %s',
-                           (letter_grade, student_name, grade_id))
+            # Update the grade info in the database, including number_grade
+            cursor.execute('UPDATE grades SET letter_grade = %s, number_grade = %s, student_name = %s WHERE grade_id = %s',
+                           (letter_grade, number_grade, student_name, grade_id))
             db.commit()
+
+            flash('Grade updated successfully!', 'success')
+
         except ValueError:
-            flash('Invalid grade input', 'error')
+            flash('Invalid input for grade', 'error')
 
         return redirect(url_for('grades.grade'))
 
@@ -60,6 +74,8 @@ def update_grade(grade_id):
     cursor.execute('SELECT * FROM grades WHERE grade_id = %s', (grade_id,))
     current_grade = cursor.fetchone()
     return render_template('update_grade.html', current_grade=current_grade)
+
+
 
 @grades.route('/delete_grade/<int:grade_id>', methods=['POST'])
 def delete_grade(grade_id):
