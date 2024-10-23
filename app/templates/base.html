@@ -23,8 +23,9 @@
                 <a class="nav-link" href="{{ url_for('movies.movie') }}">Edit Movies</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('genres.update_genre', genre_id=1) }}">Genre</a>
-            </li>
+    <a class="nav-link" href="{{ url_for('genres.update_genre', movie_id=1, genre_id=1) }}">Genre</a>
+</li>
+
  <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('movies.movie_search') }}">Search</a>
             </li>

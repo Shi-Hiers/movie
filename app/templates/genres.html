@@ -3,44 +3,58 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Manage Genres</h1>
+    <h1 class="text-center mb-4">Manage Movies and Genres</h1>
 
-    <!-- Form to add a new genre -->
-    <form method="POST" action="{{ url_for('genres.genre') }}" class="mb-4">
-        <div class="form-group">
-            <label for="genre_name">Genre Name</label>
-            <input type="text" class="form-control" id="genre_name" name="genre_name" placeholder="Enter Genre Name" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Genre</button>
-    </form>
-
-    <!-- Table to display all genres -->
+    <!-- Table to display all movies with genres -->
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">Genre ID</th>
-                <th scope="col">Genre Name</th>
+                <th scope="col">Movie Title</th>
+                <th scope="col">Release Year</th>
+                <th scope="col">Genre</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for genre in all_genres %}
+            {% for entry in movies_with_genres %}
             <tr>
-                <td>{{ genre.genre_id }}</td>
-                <td>{{ genre.genre_name }}</td>
+                <td>{{ entry['movie_title'] }}</td> <!-- Access using dictionary key -->
+                <td>{{ entry['release_year'] }}</td> <!-- Access using dictionary key -->
+                <td>{{ entry['genre_name'] }}</td> <!-- Access using dictionary key -->
                 <td>
                     <!-- Update button -->
-                    <a href="{{ url_for('genres.update_genre', genre_id=genre.genre_id) }}" class="btn btn-warning btn-sm">Update</a>
+<form method="POST" action="{{ url_for('genres.update_genre', movie_id=movie['movie_id'], genre_id=current_genre['genre_id']) }}">
 
                     <!-- Delete button -->
-                    <form action="{{ url_for('genres.delete_genre', genre_id=genre.genre_id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this genre?');">Delete</button>
+                    <form action="{{ url_for('genres.delete_genre', movie_id=entry['movie_id'], genre_id=entry['genre_id']) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this genre from the movie?');">Delete</button>
                     </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Form to assign a genre to a movie -->
+    <h2 class="text-center mb-4">Assign Genre to Movie</h2>
+    <form method="POST" action="{{ url_for('genres.assign_genre_to_movie') }}" class="mb-4">
+        <div class="form-group">
+            <label for="movie_id">Select Movie</label>
+            <select class="form-control" id="movie_id" name="movie_id" required>
+                <option value="" disabled selected>Select Movie</option>
+                {% for movie in all_movies %}
+                <option value="{{ movie['movie_id'] }}">{{ movie['movie_title'] }} ({{ movie['release_year'] }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="genre_name">Enter Genre</label>
+            <input type="text" class="form-control" id="genre_name" name="genre_name" placeholder="Enter new genre" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Genre</button>
+    </form>
 </div>
 
 {% endblock %}

@@ -1,0 +1,5 @@
+Table: movies
+Columns:
+movie_id int AI PK
+movie_title varchar(100)
+release_year varchar(4)

@@ -32,10 +32,14 @@ def movie():
     cursor.execute('SELECT * FROM genres')
     all_genres = cursor.fetchall()
 
+    db.close()
     return render_template('movies.html', all_movies=all_movies, all_genres=all_genres)
 
 @movies.route('/filter', methods=['GET'])
 def filter_movies():
+    db = get_db()
+    cursor = db.cursor()
+
     # Get filter parameters from the query string
     genre_id = request.args.get('genre_id')
     movie_title = request.args.get('movie_title')
@@ -53,17 +57,14 @@ def filter_movies():
         movies = filter_movies_by_year(release_year)
     else:
         # If no filter is applied, fetch all movies
-        db = get_db()
-        cursor = db.cursor()
         cursor.execute('SELECT * FROM movies')
         movies = cursor.fetchall()
 
     # Fetch all genres for the dropdown
-    db = get_db()
-    cursor = db.cursor()
     cursor.execute('SELECT * FROM genres')
     all_genres = cursor.fetchall()
 
+    db.close()
     # Render the template with the filtered movies and genre list
     return render_template('movies.html', all_movies=movies, all_genres=all_genres)
 
@@ -76,20 +77,21 @@ def update_movie(movie_id):
         movie_title = request.form['movie_title']
         release_year = request.form['release_year']
 
-        # Update the movie's details in the database
-        cursor.execute(
-            'UPDATE movies SET movie_title = %s, release_year = %s WHERE movie_id = %s',
-            (movie_title, release_year, movie_id)
-        )
+        cursor.execute('UPDATE movies SET movie_title = %s, release_year = %s WHERE movie_id = %s',
+                       (movie_title, release_year, movie_id))
         db.commit()
 
         flash('Movie updated successfully!', 'success')
         return redirect(url_for('movies.movie'))
 
-    # Fetch movie's current data for pre-populating the form
-    cursor.execute('SELECT * FROM movies WHERE movie_id = %s', (movie_id,))
+    cursor.execute('SELECT movie_id, movie_title, release_year FROM movies WHERE movie_id = %s', (movie_id,))
     movie = cursor.fetchone()
 
+    if movie is None:
+        flash('Movie not found!', 'danger')
+        return redirect(url_for('movies.movie'))
+
+    db.close()
     return render_template('update_movie.html', movie=movie)
 
 @movies.route('/delete_movie/<int:movie_id>', methods=['POST'])
@@ -102,6 +104,7 @@ def delete_movie(movie_id):
     db.commit()
 
     flash('Movie deleted successfully!', 'danger')
+    db.close()
     return redirect(url_for('movies.movie'))
 
 @movies.route('/movie_search', methods=['GET', 'POST'])
@@ -146,4 +149,5 @@ def movie_search():
     cursor.execute('SELECT * FROM genres')
     genres = cursor.fetchall()
 
+    db.close()
     return render_template('movie_search.html', search_results=search_results, genres=genres)
