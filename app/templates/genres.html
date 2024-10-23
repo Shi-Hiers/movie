@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Manage Genres</h1>
+
+    <!-- Form to add a new genre -->
+    <form method="POST" action="{{ url_for('genres.genre') }}" class="mb-4">
+        <div class="form-group">
+            <label for="genre_name">Genre Name</label>
+            <input type="text" class="form-control" id="genre_name" name="genre_name" placeholder="Enter Genre Name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Genre</button>
+    </form>
+
+    <!-- Table to display all genres -->
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Genre ID</th>
+                <th scope="col">Genre Name</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for genre in all_genres %}
+            <tr>
+                <td>{{ genre.genre_id }}</td>
+                <td>{{ genre.genre_name }}</td>
+                <td>
+                    <!-- Update button -->
+                    <a href="{{ url_for('genres.update_genre', genre_id=genre.genre_id) }}" class="btn btn-warning btn-sm">Update</a>
+
+                    <!-- Delete button -->
+                    <form action="{{ url_for('genres.delete_genre', genre_id=genre.genre_id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this genre?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

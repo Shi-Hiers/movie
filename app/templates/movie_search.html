@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Search Movies</h1>
+
+    <!-- Search Form -->
+    <form method="POST" action="{{ url_for('movies.movie_search') }}" class="mb-4">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" class="form-control" name="title_query" placeholder="Search by movie title">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="year_query" placeholder="Search by release year">
+            </div>
+            <div class="col">
+                <select name="genre_query" class="form-control">
+                    <option value="">Select Genre</option>
+                    {% for genre in genres %}
+                    <option value="{{ genre.genre_id }}">{{ genre.genre_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Search Results -->
+    {% if search_results %}
+  <table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Movie ID</th>
+            <th scope="col">Movie Title</th>
+            <th scope="col">Release Year</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movie in search_results %}
+        <tr>
+            <td>{{ movie['movie_id'] }}</td>
+            <td>{{ movie['movie_title'] }}</td>
+            <td>{{ movie['release_year'] }}</td>
+            <td>
+                <a href="{{ url_for('movies.update_movie', movie_id=movie['movie_id']) }}" class="btn btn-warning btn-sm">Update</a>
+                <form action="{{ url_for('movies.delete_movie', movie_id=movie['movie_id']) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this movie?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    {% else %}
+    <p class="text-center">No movies found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -2,28 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Calculators</title>
+    <title>Movies</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Calculator</a>
+    <a class="navbar-brand" href="#">Movie</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+             <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('all_movies') }}">All Movies</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('loan_amortization.loan') }}">Loan</a>
+                <a class="nav-link" href="{{ url_for('add_movie') }}">Add Movies</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                <a class="nav-link" href="{{ url_for('movies.movie') }}">Edit Movies</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('grades.grade') }}">Grades</a>
+                <a class="nav-link" href="{{ url_for('genres.update_genre', genre_id=1) }}">Genre</a>
+            </li>
+ <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('movies.movie_search') }}">Search</a>
             </li>
         </ul>
     </div>

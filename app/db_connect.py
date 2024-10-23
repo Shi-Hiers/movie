@@ -8,10 +8,10 @@ def get_db():
         g.db = pymysql.connect(
             # Database configuration
             # Configure MySQL
-            host = 'edo4plet5mhv93s3.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-            user = 'w3fe7cnh7kfyrz45',
-            password = 'us8vouahzgu9ckks',
-            database = 'k9ej8lm0dcftvijs',
+            host = 'sm9j2j5q6c8bpgyq.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+            user = 'dudcx93gtjafrxu6',
+            password = 'vxuge2zxdaupn27i',
+            database = 'rj3x19bldd754kke',
             cursorclass=pymysql.cursors.DictCursor  # Set the default cursor class to DictCursor
         )
     return g.db
