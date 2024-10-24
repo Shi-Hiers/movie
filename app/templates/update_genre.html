@@ -1,20 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Update Genre</h1>
+    <h1 class="text-center mb-4">Update Genre for Movie: {{ movie.movie_title }}</h1>
 
-    <!-- Update Genre Form -->
-    <form method="POST" action="{{ url_for('genres.update_genre', movie_id=movie[0], genre_id=current_genre['genre_id']) }}">
+    <form method="POST" action="{{ url_for('genres.update_genre', movie_id=movie.movie_id, genre_id=current_genre.genre_id) }}">
         <div class="form-group">
             <label for="genre_name">Genre Name</label>
-            <input type="text" class="form-control" id="genre_name" name="genre_name" value="{{ current_genre['genre_name'] }}" required>
+            <input type="text" class="form-control" id="genre_name" name="genre_name" value="{{ current_genre.genre_name }}" required>
         </div>
         <button type="submit" class="btn btn-primary">Update Genre</button>
-        <a href="{{ url_for('genres.genre') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ url_for('genres.assign_genre_to_movie') }}" class="btn btn-secondary">Cancel</a>
     </form>
-
 </div>
-
 {% endblock %}
