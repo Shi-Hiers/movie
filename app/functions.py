@@ -1,20 +1,5 @@
 from app.db_connect import get_db
 
-
-def get_all_genres():
-    db = get_db()
-    cursor = db.cursor()
-
-    # Fetch genres
-    query = "SELECT genre_id, genre_name FROM genres"
-    cursor.execute(query)
-    genres = cursor.fetchall()
-
-    # Convert to a list of dictionaries for easier access
-    results = [{'genre_id': g[0], 'genre_name': g[1]} for g in genres]
-    return results
-
-
 # Function to filter movies by genre
 def filter_movies_by_genre(genre_id):
     db = get_db()

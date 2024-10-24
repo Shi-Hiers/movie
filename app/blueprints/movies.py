@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from app.db_connect import get_db
-from app.functions import filter_movies_by_genre, filter_movies_by_title, filter_movies_by_year
+from app.functions import filter_movies_by_genre, filter_movies_by_title, filter_movies_by_year  # Import functions here
 
 movies = Blueprint('movies', __name__)
 
@@ -37,9 +37,6 @@ def movie():
 
 @movies.route('/filter', methods=['GET'])
 def filter_movies():
-    db = get_db()
-    cursor = db.cursor()
-
     # Get filter parameters from the query string
     genre_id = request.args.get('genre_id')
     movie_title = request.args.get('movie_title')
@@ -56,15 +53,20 @@ def filter_movies():
         # Use the function to filter by release year
         movies = filter_movies_by_year(release_year)
     else:
+        db = get_db()
+        cursor = db.cursor()
         # If no filter is applied, fetch all movies
         cursor.execute('SELECT * FROM movies')
         movies = cursor.fetchall()
+        db.close()
 
     # Fetch all genres for the dropdown
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute('SELECT * FROM genres')
     all_genres = cursor.fetchall()
-
     db.close()
+
     # Render the template with the filtered movies and genre list
     return render_template('movies.html', all_movies=movies, all_genres=all_genres)
 
