@@ -2,8 +2,13 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Search Movies</h1>
+    <div class="d-flex align-items-center justify-content-center mb-4">
+        <!-- Image for search movie catalog -->
+        <img src="{{ url_for('static', filename='assets/search.jpg') }}" width="50" style="margin-right: 10px;">
 
+        <!-- Page title -->
+        <h1 style="display: inline-block; margin: 0;">Search Movie Catalog</h1>
+    </div>
     <!-- Search Form -->
     <form method="POST" action="{{ url_for('movies.movie_search') }}" class="mb-4">
         <div class="form-row">

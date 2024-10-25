@@ -3,14 +3,20 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Add New Movie</h1>
+    <div class="d-flex align-items-center justify-content-center mb-4">
+        <!-- Image for adding a new movie -->
+        <img src="{{ url_for('static', filename='assets/add.png') }}" width="50" style="margin-right: 10px;">
 
+        <!-- Page title -->
+        <h1 style="display: inline-block; margin: 0;">Add New Movie</h1>
+    </div>
     <!-- Add Movie Form -->
     <form method="POST" action="{{ url_for('movies.movie') }}">
         <div class="form-group">
             <label for="movie_title">Movie Title</label>
             <input type="text" class="form-control" id="movie_title" name="movie_title" placeholder="Enter movie title" required>
         </div>
+
         <div class="form-group">
             <label for="release_year">Release Year</label>
             <input type="number" class="form-control" id="release_year" name="release_year" placeholder="Enter release year" required>

@@ -8,9 +8,7 @@ def movies():
     return render_template('movies.html')
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+
 
 
 @app.route('/add_movie', methods=['GET', 'POST'])

@@ -4,7 +4,9 @@
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Assign Genre to Movie</h1>
-
+<div class="text-center">
+    <img src="{{ url_for('static', filename='assets/genrepic.jpg') }}" width="350" style="display: inline-block; margin-right: 10px;">  <!-- Image for dog food -->
+</div>
     <!-- Form to assign a genre to a movie -->
     <form method="POST" action="{{ url_for('genres.assign_genre_to_movie') }}" class="mb-4">
         <div class="form-group">
