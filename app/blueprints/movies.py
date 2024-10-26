@@ -96,18 +96,31 @@ def update_movie(movie_id):
     db.close()
     return render_template('update_movie.html', movie=movie)
 
+
 @movies.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
     db = get_db()
     cursor = db.cursor()
 
-    # Delete the movie
-    cursor.execute('DELETE FROM movies WHERE movie_id = %s', (movie_id,))
-    db.commit()
+    try:
+        # Delete all related entries in the Movie_genres table first
+        cursor.execute('DELETE FROM Movie_genres WHERE movie_id = %s', (movie_id,))
 
-    flash('Movie deleted successfully!', 'danger')
-    db.close()
+        # Then delete the movie itself
+        cursor.execute('DELETE FROM movies WHERE movie_id = %s', (movie_id,))
+
+        db.commit()
+        flash('Movie deleted successfully!', 'danger')
+
+    except pymysql.MySQLError as e:
+        db.rollback()
+        flash(f"Error deleting movie: {e}", 'danger')
+
+    finally:
+        db.close()
+
     return redirect(url_for('movies.movie'))
+
 
 @movies.route('/movie_search', methods=['GET', 'POST'])
 def movie_search():
