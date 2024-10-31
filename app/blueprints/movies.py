@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from app.db_connect import get_db
-from app.functions import filter_movies_by_genre, filter_movies_by_title, filter_movies_by_year  # Import functions here
+from app.functions import filter_movies_by_genre, filter_movies_by_title, filter_movies_by_year
 
 movies = Blueprint('movies', __name__)
 
@@ -13,19 +13,32 @@ def movie():
     if request.method == 'POST':
         movie_title = request.form['movie_title']
         release_year = request.form['release_year']
+        genre_id = request.form['genre_id']
 
         # Insert the new movie into the database
         cursor.execute(
             'INSERT INTO movies (movie_title, release_year) VALUES (%s, %s)',
             (movie_title, release_year)
         )
+        movie_id = cursor.lastrowid  # Get the newly inserted movie ID
+
+        # Associate the movie with the selected genre
+        cursor.execute(
+            'INSERT INTO Movie_genres (movie_id, genre_id) VALUES (%s, %s)',
+            (movie_id, genre_id)
+        )
         db.commit()
 
         flash('New movie added successfully!', 'success')
         return redirect(url_for('movies.movie'))
 
-    # Handle GET request to display all movies
-    cursor.execute('SELECT * FROM movies')
+    # Handle GET request to display all movies with genres
+    cursor.execute("""
+        SELECT m.movie_id, m.movie_title, m.release_year, g.genre_name
+        FROM movies m
+        LEFT JOIN Movie_genres mg ON m.movie_id = mg.movie_id
+        LEFT JOIN genres g ON mg.genre_id = g.genre_id
+    """)
     all_movies = cursor.fetchall()
 
     # Fetch all genres for the dropdown filter
@@ -42,32 +55,31 @@ def filter_movies():
     movie_title = request.args.get('movie_title')
     release_year = request.args.get('release_year')
 
-    # Determine which filter to apply
-    if genre_id:
-        # Use the function to filter by genre
-        movies = filter_movies_by_genre(genre_id)
-    elif movie_title:
-        # Use the function to filter by title
-        movies = filter_movies_by_title(movie_title)
-    elif release_year:
-        # Use the function to filter by release year
-        movies = filter_movies_by_year(release_year)
-    else:
-        db = get_db()
-        cursor = db.cursor()
-        # If no filter is applied, fetch all movies
-        cursor.execute('SELECT * FROM movies')
-        movies = cursor.fetchall()
-        db.close()
-
-    # Fetch all genres for the dropdown
     db = get_db()
     cursor = db.cursor()
+
+    # Determine which filter to apply
+    if genre_id:
+        movies = filter_movies_by_genre(genre_id)
+    elif movie_title:
+        movies = filter_movies_by_title(movie_title)
+    elif release_year:
+        movies = filter_movies_by_year(release_year)
+    else:
+        # If no filter is applied, fetch all movies with genres
+        cursor.execute("""
+            SELECT m.movie_id, m.movie_title, m.release_year, g.genre_name
+            FROM movies m
+            LEFT JOIN Movie_genres mg ON m.movie_id = mg.movie_id
+            LEFT JOIN genres g ON mg.genre_id = g.genre_id
+        """)
+        movies = cursor.fetchall()
+
+    # Fetch all genres for the dropdown
     cursor.execute('SELECT * FROM genres')
     all_genres = cursor.fetchall()
     db.close()
 
-    # Render the template with the filtered movies and genre list
     return render_template('movies.html', all_movies=movies, all_genres=all_genres)
 
 @movies.route('/update_movie/<int:movie_id>', methods=['GET', 'POST'])
@@ -96,7 +108,6 @@ def update_movie(movie_id):
     db.close()
     return render_template('update_movie.html', movie=movie)
 
-
 @movies.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
     db = get_db()
@@ -120,7 +131,6 @@ def delete_movie(movie_id):
         db.close()
 
     return redirect(url_for('movies.movie'))
-
 
 @movies.route('/movie_search', methods=['GET', 'POST'])
 def movie_search():
