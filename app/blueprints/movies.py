@@ -9,7 +9,7 @@ def movie():
     db = get_db()
     cursor = db.cursor()
 
-    # Handle POST request to add a new movie
+    # Handle POST request to add a new movie!
     if request.method == 'POST':
         movie_title = request.form['movie_title']
         release_year = request.form['release_year']
