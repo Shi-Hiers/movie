@@ -9,7 +9,7 @@ def movie():
     db = get_db()
     cursor = db.cursor()
 
-    # Handle POST request to add a new movie!
+    # Handle POST request to add a new movie
     if request.method == 'POST':
         movie_title = request.form['movie_title']
         release_year = request.form['release_year']
@@ -32,12 +32,13 @@ def movie():
         flash('New movie added successfully!', 'success')
         return redirect(url_for('movies.movie'))
 
-    # Handle GET request to display all movies with genres
+    # Query to display all movies with concatenated genres
     cursor.execute("""
-        SELECT m.movie_id, m.movie_title, m.release_year, g.genre_name
+        SELECT m.movie_id, m.movie_title, m.release_year, GROUP_CONCAT(g.genre_name SEPARATOR ', ') AS genres
         FROM movies m
         LEFT JOIN Movie_genres mg ON m.movie_id = mg.movie_id
         LEFT JOIN genres g ON mg.genre_id = g.genre_id
+        GROUP BY m.movie_id
     """)
     all_movies = cursor.fetchall()
 
@@ -82,31 +83,46 @@ def filter_movies():
 
     return render_template('movies.html', all_movies=movies, all_genres=all_genres)
 
+
 @movies.route('/update_movie/<int:movie_id>', methods=['GET', 'POST'])
 def update_movie(movie_id):
     db = get_db()
     cursor = db.cursor()
 
     if request.method == 'POST':
+        # Get the updated movie details
         movie_title = request.form['movie_title']
         release_year = request.form['release_year']
+        genre_ids = request.form.getlist('genre_ids')  # Multiple genres
 
+        # Update the movie title and release year
         cursor.execute('UPDATE movies SET movie_title = %s, release_year = %s WHERE movie_id = %s',
                        (movie_title, release_year, movie_id))
-        db.commit()
 
+        # Clear existing genres for the movie
+        cursor.execute('DELETE FROM Movie_genres WHERE movie_id = %s', (movie_id,))
+
+        # Add new genres
+        for genre_id in genre_ids:
+            cursor.execute('INSERT INTO Movie_genres (movie_id, genre_id) VALUES (%s, %s)', (movie_id, genre_id))
+
+        db.commit()
         flash('Movie updated successfully!', 'success')
         return redirect(url_for('movies.movie'))
 
+    # Fetch the movie's current details
     cursor.execute('SELECT movie_id, movie_title, release_year FROM movies WHERE movie_id = %s', (movie_id,))
     movie = cursor.fetchone()
 
-    if movie is None:
-        flash('Movie not found!', 'danger')
-        return redirect(url_for('movies.movie'))
+    # Fetch all genres and the movie's current genres
+    cursor.execute('SELECT * FROM genres')
+    all_genres = cursor.fetchall()
+    cursor.execute('SELECT genre_id FROM Movie_genres WHERE movie_id = %s', (movie_id,))
+    movie_genres = [genre['genre_id'] for genre in cursor.fetchall()]
 
     db.close()
-    return render_template('update_movie.html', movie=movie)
+    return render_template('update_movie.html', movie=movie, all_genres=all_genres, movie_genres=movie_genres)
+
 
 @movies.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
