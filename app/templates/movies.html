@@ -45,7 +45,7 @@
                 <td>{{ movie.movie_id }}</td>
                 <td>{{ movie.movie_title }}</td>
                 <td>{{ movie.release_year }}</td>
-                <td>{{ movie.genres }}</td> <!-- Display concatenated genres directly -->
+                <td>{{ movie.genres }}</td> <!-- Display concatenated genres directly. -->
                 <td>
                     <a href="{{ url_for('movies.update_movie', movie_id=movie.movie_id) }}" class="btn btn-warning btn-sm">Update</a>
                     <form action="{{ url_for('movies.delete_movie', movie_id=movie.movie_id) }}" method="POST" style="display:inline;">
