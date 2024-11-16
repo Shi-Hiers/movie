@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="d-flex align-items-center justify-content-center mb-4">
-        <!-- Image for search movie catalog -->
-        <img src="{{ url_for('static', filename='assets/search.jpg') }}" width="50" style="margin-right: 10px;">
-
+    <div class="jumbotron text-center bg-dark text-white">
+        <img src="{{ url_for('static', filename='assets/searchpic.png') }}" alt="Movie Banner" class="img-fluid mb-3" style="max-height: 100px;">
+        <h1>Search Movie Catalog</h1>
+        <p>Find your favorite movies by title, genre, or release year.</p>
+    </div>
         <!-- Page title -->
         <h1 style="display: inline-block; margin: 0;">Search Movie Catalog</h1>
     </div>
